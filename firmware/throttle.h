@@ -3,7 +3,6 @@
 #include <avr/interrupt.h>
 
 
-#define BRAKE_IN 
 #define THROTTLE_IN PB2
 #define THROTTLE_OUT PB0
 
