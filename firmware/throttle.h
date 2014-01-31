@@ -35,6 +35,8 @@
 #define adc_get_value() (ADCH)
 
 #define set_timer0_duty(duty) {OCR0A = duty * 255 / 100;}
+#define enable_timer0() (TCCR0B |= (1 << CS00))
+#define disable_timer0() (TCCR0B &= ~(1 << CS00))
 
 #define set_timer1_overflow(ovf) {OCR1B = ovf; OCR1C = ovf;}
 #define enable_timer1_interrupt() (TIMSK |= (1 << OCIE1B))
