@@ -1,5 +1,6 @@
 #include <avr/io.h>
 #include <util/delay.h>
+#include <avr/interrupt.h>
 
 
 #define BRAKE_IN 
@@ -14,7 +15,15 @@
 #define set_up_timer0() { \
 	TCCR0A |= (1 << COM0A1) | (1 << WGM00) | (1 << WGM01); \
 	TCCR0B |= (1 << CS00); \
-	TIMSK |= (1 << TOIE0); \
+}
+
+//Clear on OCR1C, Start timer, 
+#define set_up_timer1() { \
+	TCCR1 |= (1 << CTC1) | (1 << CS10); \
+	PLLCSR |= (1 << PLLE); \
+	_delay_us(100); \
+	while(!(PLLCSR & (1 << PLOCK))) {} \
+	PLLCSR |= (1 << PCKE); \
 }
 
 #define set_output_high(out) (PORTB |= (1 << out))
@@ -25,8 +34,13 @@
 #define adc_is_running() ((ADCSRA & (1 << ADSC)) >> ADSC)
 #define adc_get_value() (ADCH)
 
-#define set_duty(duty) {OCR0A = duty * 255 / 100;}
+#define set_timer0_duty(duty) {OCR0A = duty * 255 / 100;}
 
+#define set_timer1_overflow(ovf) {OCR1B = ovf; OCR1C = ovf;}
+#define enable_timer1_interrupt() (TIMSK |= (1 << OCIE1B))
+#define disable_timer1_interrupt() (TIMSK &= ~(1 << OCIE1B))
 
 void set_up_interface(uint8_t brakeIn);
+void start_interface(void);
+void stop_interface(void);
 

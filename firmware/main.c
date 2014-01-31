@@ -12,6 +12,11 @@ Throttle out MUST be PB0
 
 int main(void) {
 	set_up_interface(BRAKE);
+	start_interface();
+
+	while(1) {
+		
+	}
 
 	return 0;
 }
