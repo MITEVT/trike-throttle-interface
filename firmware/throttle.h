@@ -12,8 +12,9 @@
 
 #define set_up_adc() {ADMUX |= (1 << MUX0) | (1 << ADLAR); ADCSRA |= (1 << ADPS1) | (1 << ADPS0); ADCSRA |= (1 << ADEN);}
 
+//Inverting mode to prevent blips
 #define set_up_timer0() { \
-	TCCR0A |= (1 << COM0A1) | (1 << WGM00) | (1 << WGM01); \
+	TCCR0A |= (1 << COM0A1) | (1 << COM0A0) | (1 << WGM00) | (1 << WGM01); \
 	TCCR0B |= (1 << CS00); \
 }
 
@@ -34,7 +35,8 @@
 #define adc_is_running() ((ADCSRA & (1 << ADSC)) >> ADSC)
 #define adc_get_value() (ADCH)
 
-#define set_timer0_duty(duty) {OCR0A = duty * 255 / 100;}
+//Invert because in inverted mode
+#define set_timer0_duty(duty) {OCR0A = 0xFF - (duty * 255 / 100);}
 #define enable_timer0() (TCCR0B |= (1 << CS00))
 #define disable_timer0() (TCCR0B &= ~(1 << CS00))
 
