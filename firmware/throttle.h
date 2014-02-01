@@ -13,7 +13,7 @@
 
 //Inverting mode to prevent blips
 #define set_up_timer0() { \
-	TCCR0A |= (1 << COM0A1) | (1 << COM0A0) | (1 << WGM00) | (1 << WGM01); \
+	TCCR0A |= (1 << COM0A1) | (1 << COM0A0) | (1 << COM0B1) | (1 << COM0B0) | (1 << WGM00) | (1 << WGM01); \
 	TCCR0B |= (1 << CS00); \
 }
 
@@ -35,7 +35,7 @@
 #define adc_get_value() (ADCH)
 
 //Invert because in inverted mode
-#define set_timer0_duty(duty) {OCR0A = 0xFF - (duty * 255 / 100);}
+#define set_timer0_duty(duty) {OCR0A = 0xFF - (duty * 255 / 100); OCR0B = 0xFF - (duty * 255 / 100);}
 #define enable_timer0() (TCCR0B |= (1 << CS00))
 #define disable_timer0() (TCCR0B &= ~(1 << CS00))
 
