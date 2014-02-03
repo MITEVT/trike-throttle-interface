@@ -1,6 +1,6 @@
 #include "throttle.h"
 
-#define REGEN PB1
+#define REGEN PB4
 
 /*
 
@@ -23,5 +23,6 @@ int main(void) {
 
 	}
 
+	stop_interface();
 	return 0;
 }

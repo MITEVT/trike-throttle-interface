@@ -4,6 +4,7 @@
 
 
 #define THROTTLE_IN PB2
+#define REGEN_OUT PB1
 #define THROTTLE_OUT PB0
 
 #define set_up_input(in) {}
