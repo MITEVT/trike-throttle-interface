@@ -14,11 +14,8 @@ def map_values(minVal, maxVal, count, curvature = 1.0):
 		centerX = rangeMod
 		centerY = minVal
 
-	list = []
 	rangeMod /= count
-	print rangeMod * count
-	for i in range(count + 1):
-		list.append((abs(curvature) * (i*rangeMod - centerX)**2 + centerY))
+	list = [(abs(curvature) * (i*rangeMod - centerX)**2 + centerY) for i in range(count + 1)]
 
 	if curvature < 0:
 		list.reverse()
