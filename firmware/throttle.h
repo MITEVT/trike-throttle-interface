@@ -7,8 +7,8 @@
 #define REGEN_OUT PB1
 #define THROTTLE_OUT PB0
 
-#define set_up_input(in) {}
-#define set_up_output() (DDRB |= (1 << THROTTLE_OUT))
+#define set_up_input(in) {PORTB |= (1 << in);}
+#define set_up_output(out) (DDRB |= (1 << THROTTLE_OUT) | (1 << REGEN_OUT) | (1 << out))
 
 #define set_up_adc() {ADMUX |= (1 << MUX0) | (1 << ADLAR); ADCSRA |= (1 << ADPS1) | (1 << ADPS0); ADCSRA |= (1 << ADEN);}
 
@@ -36,7 +36,9 @@
 #define adc_get_value() (ADCH)
 
 //Invert because in inverted mode
-#define set_timer0_duty(duty) {OCR0A = 0xFF - (duty * 255 / 100); OCR0B = 0xFF - (duty * 255 / 100);}
+//#define set_timer0_duty(duty, pin) {pin = 0xFF - (duty * 255 / 100);}
+#define set_timer0_duty_Throttle(duty) {OCR0A = 0xFF - (duty);}
+#define set_timer0_duty_Regen(duty) {OCR0B = 0xFF - (duty);}
 #define enable_timer0() (TCCR0B |= (1 << CS00))
 #define disable_timer0() (TCCR0B &= ~(1 << CS00))
 
@@ -44,7 +46,10 @@
 #define enable_timer1_interrupt() (TIMSK |= (1 << OCIE1B))
 #define disable_timer1_interrupt() (TIMSK &= ~(1 << OCIE1B))
 
-void set_up_interface(uint8_t brakeIn);
+#define activate_regen(out) {DDRB |= (1 << out); PORTB &= ~(1 << out);}
+#define disable_regen(out) {PORTB |= (1 << out);}
+
+void set_up_interface(uint8_t brakeIn, uint8_t brakeOut);
 void start_interface(void);
 void stop_interface(void);
 

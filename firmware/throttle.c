@@ -5,6 +5,7 @@
 
 uint8_t rIn;
 uint8_t inRegen;
+uint8_t bOut;
 
 uint16_t read_throttle(void) {
 	start_adc();
@@ -19,25 +20,37 @@ ISR(TIM1_COMPB_vect) {
 	uint8_t input = get_input(rIn);
 
 	if (input) {
-		inRegen = 0;
-		set_timer0_duty(throttle * 100 / 256);
+		if (inRegen) {
+			inRegen = 0;
+			set_timer0_duty_Regen(0);
+			set_timer0_duty_Throttle(0);
+			_delay_ms(500);
+			disable_regen(bOut);
+			_delay_ms(500);
+		}
+		set_timer0_duty_Regen(0);
+		set_timer0_duty_Throttle(throttle);
 	} else {
 		if (!inRegen) {
 			inRegen = 1;
-			set_timer0_duty(0);
-			_delay_ms(1000);
-			
+			set_timer0_duty_Regen(0);
+			set_timer0_duty_Throttle(0);
+			_delay_ms(500);
+			activate_regen(bOut);
+			_delay_ms(500);
 		}
-		set_timer0_duty(throttle * 100 / 256);
+		set_timer0_duty_Throttle(0);
+		set_timer0_duty_Regen(throttle);
 	}
 }
 
-void set_up_interface(uint8_t regenIn) {
+void set_up_interface(uint8_t regenIn, uint8_t brakeOut) {
 	rIn = regenIn;
+	bOut = brakeOut;
 	inRegen = 0;
 
 	set_up_input(rIn);
-	set_up_output();
+	set_up_output(bOut);
 	set_up_adc();
 	set_up_timer0();
 	set_up_timer1();
@@ -45,12 +58,13 @@ void set_up_interface(uint8_t regenIn) {
 
 	sei();
 
-	set_timer0_duty(0);
+	set_timer0_duty_Throttle(0);
+	set_timer0_duty_Regen(0);
+	disable_regen(bOut);
 }
 
 void start_interface(void) {
 	enable_timer1_interrupt();
-	//set_timer0_duty(50);
 }
 
 void stop_interface(void) {
