@@ -49,7 +49,7 @@
 #define activate_regen(out) {DDRB |= (1 << out); PORTB &= ~(1 << out);}
 #define disable_regen(out) {PORTB |= (1 << out);}
 
-void set_up_interface(uint8_t brakeIn, uint8_t brakeOut);
+void set_up_interface(uint8_t switchIn, uint8_t switchOut);
 void start_interface(void);
 void stop_interface(void);
 

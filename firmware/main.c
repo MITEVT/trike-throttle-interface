@@ -1,7 +1,7 @@
 #include "throttle.h"
 
-#define REGEN PB4
-#define BRAKE_OUT PB3
+#define SW_IN PB4
+#define SW_OUT PB3
 
 /*
 
@@ -17,7 +17,7 @@ Throttle out MUST be PB0
 
 
 int main(void) {
-	set_up_interface(REGEN, BRAKE_OUT);
+	set_up_interface(SW_IN, SW_OUT);
 	start_interface();
 
 	while(1) {
