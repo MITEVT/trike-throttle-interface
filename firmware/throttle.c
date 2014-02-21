@@ -2,7 +2,9 @@
 
 uint8_t sIn;
 uint8_t inRegen;
+uint8_t moving;
 uint8_t sOut;
+uint8_t count;
 
 uint16_t read_throttle(void) {
 	start_adc();
@@ -54,6 +56,7 @@ void delayMicroseconds(unsigned int us)
         SREG = oldSREG;
 }
 
+//Divide by 8 because ATtiny actually runs at 1 MHz
 void delayMilliseconds(unsigned int ms) {
 	unsigned int i;
 	for (i = 0; i < ms/8; i++) {
@@ -65,28 +68,44 @@ ISR(TIM1_COMPB_vect) {
 	uint16_t throttle = read_throttle();
 	uint8_t input = get_input(sIn);
 
-	if (input) {
+	if (!moving && throttle) {
+		if (count++ > 250) {
+			moving = 1;
+			count = 0;
+		}
+		if (inRegen) {
+			set_timer0_duty_Throttle(0);
+			set_timer0_duty_Regen(throttle);
+		} else {	
+			set_timer0_duty_Regen(0);
+			set_timer0_duty_Throttle(throttle);
+		}
+	} else if (input) {
 		if (inRegen) {
 			inRegen = 0;
+			moving = 0;
 			set_timer0_duty_Regen(0);
 			set_timer0_duty_Throttle(0);
-			delayMilliseconds(500);
+			delayMilliseconds(1000); //Still bad practice but don't need interrupts during this period anyways, not evne for timer 0
 			disable_regen(sOut);
-			delayMilliseconds(500);
+			delayMilliseconds(1000);
+		} else {
+			set_timer0_duty_Regen(0);
+			set_timer0_duty_Throttle(throttle);
 		}
-		set_timer0_duty_Regen(0);
-		set_timer0_duty_Throttle(throttle);
 	} else {
 		if (!inRegen) {
 			inRegen = 1;
+			moving = 0; //Doesn't hurt if it is actually moving, but helps if it isn't
 			set_timer0_duty_Regen(0);
 			set_timer0_duty_Throttle(0);
-			delayMilliseconds(500);
+			delayMilliseconds(1000);
 			activate_regen(sOut);
-			delayMilliseconds(500);
+			delayMilliseconds(1000);
+		} else {
+			set_timer0_duty_Throttle(0);
+			set_timer0_duty_Regen(throttle);
 		}
-		set_timer0_duty_Throttle(0);
-		set_timer0_duty_Regen(throttle);
 	}
 }
 
@@ -94,6 +113,7 @@ void set_up_interface(uint8_t switchIn, uint8_t switchOut) {
 	sIn = switchIn;
 	sOut = switchOut;
 	inRegen = 0;
+	moving = 0;
 
 	set_up_input(sIn);
 	set_up_output(sOut);
