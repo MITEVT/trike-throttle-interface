@@ -7,7 +7,7 @@
 #define REGEN_OUT PB1
 #define THROTTLE_OUT PB0
 
-#define set_up_input(in) {PORTB |= (1 << in);}
+#define set_up_input(in) {DDRB &= ~(1 << in); PORTB |= (1 << in);}
 #define set_up_output(out) (DDRB |= (1 << THROTTLE_OUT) | (1 << REGEN_OUT) | (1 << out))
 
 #define set_up_adc() {ADMUX |= (1 << MUX0) | (1 << ADLAR); ADCSRA |= (1 << ADPS1) | (1 << ADPS0); ADCSRA |= (1 << ADEN);}
@@ -46,8 +46,8 @@
 #define enable_timer1_interrupt() (TIMSK |= (1 << OCIE1B))
 #define disable_timer1_interrupt() (TIMSK &= ~(1 << OCIE1B))
 
-#define activate_regen(out) {DDRB |= (1 << out); PORTB &= ~(1 << out);}
-#define disable_regen(out) {PORTB |= (1 << out);}
+#define activate_regen(out) {DDRB |= (1 << out); PORTB |= (1 << out);}
+#define disable_regen(out) {DDRB |= (1 << out); PORTB &= ~(1 << out);}
 
 void set_up_interface(uint8_t switchIn, uint8_t switchOut);
 void start_interface(void);
