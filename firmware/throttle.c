@@ -2,9 +2,7 @@
 
 uint8_t sIn;
 uint8_t inRegen;
-uint8_t moving;
 uint8_t sOut;
-uint8_t count;
 
 uint16_t read_throttle(void) {
 	start_adc();
@@ -67,24 +65,10 @@ void delayMilliseconds(unsigned int ms) {
 ISR(TIM1_COMPB_vect) {
 	uint16_t throttle = read_throttle();
 	uint8_t input = get_input(sIn);
-	//uint8_t input = 1;  
-	/*if (!moving && throttle) {
-		if (count++ > 250) {
-			moving = 1;
-			count = 0;
-		}
-		if (inRegen) {
-			set_timer0_duty_Throttle(0);
-			set_timer0_duty_Regen(throttle);
-		} else {	
-			set_timer0_duty_Regen(0);
-			set_timer0_duty_Throttle(throttle);
-		}
-	} else*/ 
+
 	if (input) {
 		if (inRegen) {
 			inRegen = 0;
-			moving = 0;
 			set_timer0_duty_Regen(0);
 			set_timer0_duty_Throttle(0);
 			delayMilliseconds(50); //Still bad practice but don't need interrupts during this period anyways, not even for timer 0
@@ -97,7 +81,6 @@ ISR(TIM1_COMPB_vect) {
 	} else {
 		if (!inRegen) {
 			inRegen = 1;
-			moving = 0;
 			set_timer0_duty_Regen(0);
 			set_timer0_duty_Throttle(0);
 			delayMilliseconds(50);
@@ -114,7 +97,6 @@ void set_up_interface(uint8_t switchIn, uint8_t switchOut) {
 	sIn = switchIn;
 	sOut = switchOut;
 	inRegen = 0;
-	moving = 0;
 
 	_delay_ms(2000);
 
