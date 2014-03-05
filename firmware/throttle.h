@@ -18,15 +18,6 @@
 	TCCR0B |= (1 << CS00); \
 }
 
-//Clear on OCR1C, Start timer, 
-#define set_up_timer1() { \
-	TCCR1 |= (1 << CTC1) | (1 << CS10); \
-	PLLCSR |= (1 << PLLE); \
-	_delay_us(100); \
-	while(!(PLLCSR & (1 << PLOCK))) {} \
-	PLLCSR |= (1 << PCKE); \
-}
-
 #define set_output_high(out) (PORTB |= (1 << out))
 #define set_output_low(out) (PORTB &= ~(1 << out))
 #define get_input(in) (PINB & (1 << in))
@@ -42,14 +33,6 @@
 #define enable_timer0() (TCCR0B |= (1 << CS00))
 #define disable_timer0() (TCCR0B &= ~(1 << CS00))
 
-#define set_timer1_overflow(ovf) {OCR1B = ovf; OCR1C = ovf;}
-#define enable_timer1_interrupt() (TIMSK |= (1 << OCIE1B))
-#define disable_timer1_interrupt() (TIMSK &= ~(1 << OCIE1B))
-
 #define activate_regen(out) {DDRB |= (1 << out); PORTB |= (1 << out);}
 #define disable_regen(out) {DDRB |= (1 << out); PORTB &= ~(1 << out);}
-
-void set_up_interface(uint8_t switchIn, uint8_t switchOut);
-void start_interface(void);
-void stop_interface(void);
 
