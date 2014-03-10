@@ -8,6 +8,7 @@
 
 Throttle in MUST be PB2
 Throttle out MUST be PB0
+Regen out must be PB1
 */
 
 /*******************
