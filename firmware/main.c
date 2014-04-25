@@ -14,8 +14,19 @@ Regen out must be PB1
 /*******************
 * Functionality:
 * PWM Signal outputed relative to throttle input.
-* When Reverse switch brought low, signla is transmitted to motor controller and output switched to regen, after delay 
+* When Reverse switch brought low, signal is passed to motor controller and output switched to regen, after delay 
 ********************/
+
+/*******************
+State Machine Spec
+
+St|In|St'
+T |0 |R
+T |1 |T
+R |0 |R
+R |1 |T
+
+*********************/
 
 
 typedef void *(*StateFunction)(void);
@@ -79,6 +90,6 @@ int main(void) {
 
 	while(1) {
 		stateFunc = (StateFunction)(*stateFunc)();
-		_delay_ms(1);
+		_delay_ms(10);
 	}
 }
