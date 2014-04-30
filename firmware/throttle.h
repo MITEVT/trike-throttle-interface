@@ -27,9 +27,8 @@
 #define adc_get_value() (ADCH)
 
 //Invert because in inverted mode
-//#define set_timer0_duty(duty, pin) {pin = 0xFF - (duty * 255 / 100);}
-#define set_timer0_duty_Throttle(duty) {OCR0A = 0xFF - (duty);}
-#define set_timer0_duty_Regen(duty) {OCR0B = 0xFF - (duty);}
+#define set_timer0_duty_throttle(duty) {OCR0A = 0xFF - (duty);}
+#define set_timer0_duty_regen(duty) {OCR0B = 0xFF - (duty);}
 #define enable_timer0() (TCCR0B |= (1 << CS00))
 #define disable_timer0() (TCCR0B &= ~(1 << CS00))
 

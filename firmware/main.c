@@ -13,19 +13,20 @@ Regen out must be PB1
 
 /*******************
 * Functionality:
-* PWM Signal outputed relative to throttle input.
-* When Reverse switch brought low, signal is passed to motor controller and output switched to regen, after delay 
+* PWM output relative to throttle input.
+* When regen switch (BRAKE-SW on Kelley) brought low, signal is passed to motor controller and throttle output
+* switched to PB1, after a short delay.
 ********************/
 
 /*******************
-State Machine Spec
-
-St|In|St'
-T |0 |R
-T |1 |T
-R |0 |R
-R |1 |T
-
+*State Machine Spec
+*
+*St|In|St'
+*T |0 |R
+*T |1 |T
+*R |0 |R
+*R |1 |T
+*
 *********************/
 
 
@@ -45,12 +46,12 @@ uint16_t read_throttle(void) {
 void *throttle(void) {
 	uint16_t throttleIn = read_throttle();
 	if (get_input(SW_IN)) {
-		set_timer0_duty_Regen(0);
-		set_timer0_duty_Throttle(throttleIn);
+		set_timer0_duty_regen(0);
+		set_timer0_duty_throttle(throttleIn);
 		return throttle;
 	} else {
-		set_timer0_duty_Regen(0);
-		set_timer0_duty_Throttle(0);
+		set_timer0_duty_regen(0);
+		set_timer0_duty_throttle(0);
 		_delay_ms(50);
 		activate_regen(SW_OUT);
 		_delay_ms(50);
@@ -61,12 +62,12 @@ void *throttle(void) {
 void *regenerativeBraking(void) {
 	uint16_t throttleIn = read_throttle();
 	if (!get_input(SW_IN)) {
-		set_timer0_duty_Regen(throttleIn);
-		set_timer0_duty_Throttle(0);
+		set_timer0_duty_regen(throttleIn);
+		set_timer0_duty_throttle(0);
 		return regenerativeBraking;
 	} else {
-		set_timer0_duty_Regen(0);
-		set_timer0_duty_Throttle(0);
+		set_timer0_duty_regen(0);
+		set_timer0_duty_throttle(0);
 		_delay_ms(50);
 		disable_regen(SW_OUT);
 		_delay_ms(50);
@@ -81,13 +82,13 @@ void setup(void) {
 	set_up_adc();
 	set_up_timer0();
 
-	set_timer0_duty_Throttle(0);
-	set_timer0_duty_Regen(0);
+	set_timer0_duty_throttle(0);
+	set_timer0_duty_regen(0);
 }
 
 int main(void) {
 	setup();
-	
+
 	StateFunction stateFunc = throttle;
 
 	while(1) {
