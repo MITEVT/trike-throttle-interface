@@ -86,6 +86,8 @@ void setup(void) {
 }
 
 int main(void) {
+	setup();
+	
 	StateFunction stateFunc = throttle;
 
 	while(1) {
