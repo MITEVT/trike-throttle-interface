@@ -35,6 +35,11 @@ typedef void *(*StateFunction)(void);
 void *regenerativeBraking(void);
 void *throttle(void);
 
+uint8_t read_eeprom(uint16_t address) {
+	eeprom_read(address);
+	return eeprom_get_value();
+}
+
 uint16_t read_throttle(void) {
 	start_adc();
 	while(adc_is_running()) {
@@ -45,9 +50,10 @@ uint16_t read_throttle(void) {
 
 void *throttle(void) {
 	uint16_t throttleIn = read_throttle();
+	uint8_t outputVal = read_eeprom((throttleIn & 0x00FF));
 	if (get_input(SW_IN)) {
 		set_timer0_duty_regen(0);
-		set_timer0_duty_throttle(throttleIn);
+		set_timer0_duty_throttle(outputVal);
 		return throttle;
 	} else {
 		set_timer0_duty_regen(0);
@@ -61,8 +67,9 @@ void *throttle(void) {
 
 void *regenerativeBraking(void) {
 	uint16_t throttleIn = read_throttle();
+	uint8_t outputVal = read_eeprom((throttleIn & 0x00FF) | 0x0100);
 	if (!get_input(SW_IN)) {
-		set_timer0_duty_regen(throttleIn);
+		set_timer0_duty_regen(outputVal);
 		set_timer0_duty_throttle(0);
 		return regenerativeBraking;
 	} else {

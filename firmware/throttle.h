@@ -35,3 +35,7 @@
 #define activate_regen(out) {DDRB |= (1 << out); PORTB |= (1 << out);}
 #define disable_regen(out) {DDRB |= (1 << out); PORTB &= ~(1 << out);}
 
+#define eeprom_read(address) {EEAR = address;\
+							  EECR |= (1 << EERE);\
+}
+#define eeprom_get_value() (EEDR)
