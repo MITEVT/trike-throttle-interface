@@ -3,6 +3,8 @@
 #define SW_IN PB4
 #define SW_OUT PB3
 
+#define SWITCH_DELAY 50
+
 
 /*
 
@@ -50,7 +52,7 @@ uint16_t read_throttle(void) {
 
 void *throttle(void) {
 	uint16_t throttleIn = read_throttle();
-	uint8_t outputVal = read_eeprom((throttleIn & 0x00FF));
+	uint8_t outputVal = read_eeprom(throttleIn & 0x00FF);
 	if (get_input(SW_IN)) {
 		set_timer0_duty_regen(0);
 		set_timer0_duty_throttle(outputVal);
@@ -58,9 +60,9 @@ void *throttle(void) {
 	} else {
 		set_timer0_duty_regen(0);
 		set_timer0_duty_throttle(0);
-		_delay_ms(50);
+		_delay_ms(SWITCH_DELAY);
 		activate_regen(SW_OUT);
-		_delay_ms(50);
+		_delay_ms(SWITCH_DELAY);
 		return regenerativeBraking;
 	}
 }
@@ -75,9 +77,9 @@ void *regenerativeBraking(void) {
 	} else {
 		set_timer0_duty_regen(0);
 		set_timer0_duty_throttle(0);
-		_delay_ms(50);
+		_delay_ms(SWITCH_DELAY);
 		disable_regen(SW_OUT);
-		_delay_ms(50);
+		_delay_ms(SWITCH_DELAY);
 		return throttle;
 	}
 }
