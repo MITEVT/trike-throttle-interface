@@ -1,10 +1,8 @@
-Trike-Throttle Interface
-=====================
+#Trike-Throttle Interface
 
 Interface between the throttle and BMS for the NY Tricycle Project
 
-Instructions for Use
---------------------
+##Instructions for Use
 1. Use throttle profile python program (either) to come up with a throttle and regen profile
 	- Throttle profile consists of 256 integers with values between 0 and 255
 	- Old profile program parameters can be edited in main.py (Hint: giving the round parameter a non-zero value will give you a nicely formatted integer array)
